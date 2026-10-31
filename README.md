@@ -6,7 +6,7 @@ It runs **offline on your own PC** with OpenAI's Whisper `large-v3` model (throu
 
 ## Use it
 
-1. Download **[Make Arabic Captions.bat](../../raw/main/Make%20Arabic%20Captions.bat)**. That one file is the whole program.
+1. Download **[Make Arabic Captions.bat](https://github.com/nagasab221/Arabic-Captions/releases/latest/download/Make.Arabic.Captions.bat)**. That one file is the whole program.
 2. Double-click it, or drag a video onto it, and pick your video.
 3. `<your video>_ar.srt` appears next to the video.
 
