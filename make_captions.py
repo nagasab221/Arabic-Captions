@@ -91,7 +91,15 @@ def run(model, audio):
     total = len(audio) / 16000
     for s in segments:
         print(f"  {s.start:6.1f}s / {total:.0f}s  {s.text.strip()}")
-        words = [(w.start, w.end, w.word.strip()) for w in (s.words or []) if w.word.strip()]
+        words = []
+        for w in (s.words or []):
+            t = w.word.strip()
+            if not t:
+                continue
+            if words and not any(c.isalnum() for c in t):  # lone ".." or "\u060c": glue to previous word
+                words[-1] = (words[-1][0], words[-1][1], words[-1][2] + t)
+            else:
+                words.append((w.start, w.end, t))
         if words:
             phrases.append(words)
     return phrases
@@ -140,11 +148,21 @@ def chunk(phrases):
     out = []
     for i, ch in enumerate(chunks):
         s, e = ch[0][0], ch[-1][1]
-        if i + 1 < len(chunks) and chunks[i + 1][0][0] - e < PAUSE:
-            e = chunks[i + 1][0][0]  # no flicker between close captions
+        nxt = chunks[i + 1][0][0] if i + 1 < len(chunks) else None
+        if nxt is not None and nxt - e < PAUSE:
+            e = nxt  # no flicker between close captions
         e = max(e, s + MIN_SHOW)
-        out.append((s, e, " ".join(x[2] for x in ch)))
+        if nxt is not None:
+            e = min(e, nxt)  # never overlap the next caption
+        text = " ".join(t for t in (tidy(x[2]) for x in ch) if t)
+        if text:
+            out.append((s, e, text))
     return out
+
+
+def tidy(word):
+    """Text to show: drop trailing dots/commas Whisper adds ("..", "\u060c"); keep ? and !."""
+    return word.rstrip(".,\u060c\u2026 ")
 
 
 def ts(t):
