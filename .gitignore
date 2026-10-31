@@ -1,0 +1,11 @@
+# Publish only the caption tool; everything else in this folder is private work.
+/*
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/make_captions.py
+!/Make Arabic Captions.bat
+!/portable/
+/portable/*
+!/portable/header.bat
+!/portable/build_bat.py
